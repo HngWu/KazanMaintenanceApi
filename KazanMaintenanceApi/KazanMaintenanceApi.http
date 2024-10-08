@@ -1,0 +1,6 @@
+@KazanMaintenanceApi_HostAddress = http://localhost:5072
+
+GET {{KazanMaintenanceApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
