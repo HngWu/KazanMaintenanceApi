@@ -10,7 +10,8 @@ namespace KazanMaintenanceApi.Controllers
         Wsc2019Session3FinalContext context = new Wsc2019Session3FinalContext();
 
 
-        public class tempClass
+
+        public class tempTask
         {
             public int Id { get; set; }
             public string AssetName { get; set; }
@@ -21,22 +22,50 @@ namespace KazanMaintenanceApi.Controllers
             public int? ScheduleKilometer { get; set; }
             public bool TaskDone { get; set; }
         }
+        public class tempCreateTask
+        {
+            public int AssetID { get; set; }
+            public int TaskId { get; set; }
+            public int ScheduleType { get; set; }
+            public string? ScheduleDate { get; set; }
+            public int? ScheduleKilometer { get; set; }
+            public bool TaskDone { get; set; }
+            public int? odometerReading { get; set; }
+        }
 
 
         [HttpPost("createtask")]
-        public IActionResult UpdateTask(tempClass task)
+        public IActionResult CreateTask(List<tempCreateTask> tasksList)
         {
             try
             {
-                //var newTask = new Pmtasks
-                //{
-                //    TaskId = context.Tasks.Where(x => x.Name == task.TaskName).Select(x => x.Id).FirstOrDefault(),
-                //    ScheduleTypeId = context.PmscheduleType.Where(x => x.Name == task.ScheduleType).Select(x => x.Id).FirstOrDefault(),
-                //    ScheduleDate = task.ScheduleDate,
-                //    ScheduleKilometer = task.ScheduleKilometer,
-                //    TaskDone = task.TaskDone
-                //};
-                context.SaveChanges();
+                foreach (var task in tasksList)
+                {
+                    var newTask = new Pmtask
+                    {
+                        AssetId = task.AssetID,
+                        TaskId = task.TaskId,
+                        PmscheduleTypeId = task.ScheduleType,
+                        ScheduleDate = DateOnly.Parse(task.ScheduleDate),
+                        ScheduleKilometer = task.ScheduleKilometer,
+                        TaskDone = task.TaskDone
+                    };
+                    context.Pmtasks.Add(newTask);
+
+                    if (task.ScheduleType == 1)
+                    {
+                        var reading = new AssetOdometer
+                        {
+                            AssetId = task.AssetID,
+                            ReadDate = DateOnly.FromDateTime(DateTime.Now),
+                            OdometerAmount = (long)task.odometerReading
+                        };
+                        context.AssetOdometers.Add(reading);
+                    }
+                    context.SaveChanges();
+
+                }
+
                 return Ok();
             }
             catch (Exception)
@@ -47,7 +76,7 @@ namespace KazanMaintenanceApi.Controllers
 
 
         [HttpPost("updatetask")]
-        public IActionResult UpdateTask(tempClass task)
+        public IActionResult UpdateTask(tempTask task)
         {
             try
             {
