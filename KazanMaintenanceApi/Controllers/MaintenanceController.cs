@@ -46,22 +46,22 @@ namespace KazanMaintenanceApi.Controllers
                         AssetId = task.AssetID,
                         TaskId = task.TaskId,
                         PmscheduleTypeId = task.ScheduleType,
-                        ScheduleDate = DateOnly.Parse(task.ScheduleDate),
+                        ScheduleDate = string.IsNullOrEmpty(task.ScheduleDate) ? null : DateOnly.Parse(task.ScheduleDate),
                         ScheduleKilometer = task.ScheduleKilometer,
                         TaskDone = task.TaskDone
                     };
                     context.Pmtasks.Add(newTask);
 
-                    if (task.ScheduleType == 1)
-                    {
-                        var reading = new AssetOdometer
-                        {
-                            AssetId = task.AssetID,
-                            ReadDate = DateOnly.FromDateTime(DateTime.Now),
-                            OdometerAmount = (long)task.odometerReading
-                        };
-                        context.AssetOdometers.Add(reading);
-                    }
+                    //if (task.ScheduleType == 1)
+                    //{
+                    //    var reading = new AssetOdometer
+                    //    {
+                    //        AssetId = task.AssetID,
+                    //        ReadDate = DateOnly.FromDateTime(DateTime.Now),
+                    //        OdometerAmount = (long)task.odometerReading
+                    //    };
+                    //    context.AssetOdometers.Add(reading);
+                    //}
                     context.SaveChanges();
 
                 }
